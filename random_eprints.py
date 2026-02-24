@@ -276,7 +276,7 @@ def parse_args_random_eprints():
     parser.add_argument('-i', '--imagecount', type=int, help="Max images per record", default=1)
     parser.add_argument('-p', '--pdfcount', type=int, help="Max PDFS per record", default=1)
     parser.add_argument('-d', '--docs', help="Include documents", action='store_true')
-    parser.add_argument('-s', '--subjects', type=str, help="subjects file path", default='/opt/eprints3/archives/clocks/cfg/subjects')
+    parser.add_argument('-s', '--subjects', type=str, help="subjects file path", default='/opt/eprints3/flavours/pub_lib/defaultcfg/subjects')
     parser.add_argument('-t', '--textfile', type=str, help="path to text file for data", default='book.txt')
     parser.add_argument('-f', '--tofile', type=str, help="produce file rather than stdout",)
 
