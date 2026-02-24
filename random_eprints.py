@@ -70,7 +70,7 @@ class Subjects:
 
 
 class RandomName:
-    def __init__(self):
+    def __init__(self, preallocate=5):
         self.all_names = []
         firstnames = ["given_names_male", "given_names_female"]
         for filename in firstnames:
@@ -80,11 +80,19 @@ class RandomName:
         with open(os.path.join(dirname,"surnames")) as namesfile:
             self.surnames = [name.strip() for name in namesfile.readlines()]
 
-    def get_name(self):
+
+        self.preallocated_names = []
+        for i in range(preallocate):
+            self.preallocated_names.append(self._get_name())
+
+    def _get_name(self):
         name = random.choice(self.all_names) + " " + random.choice(self.surnames)
         #make lowercase than capitalise each word
         name = name.lower().title()
         return name
+
+    def get_name(self):
+        return random.choice(self.preallocated_names)
 
 class RandomImage:
     def __init__(self, folder_path):
@@ -154,7 +162,9 @@ by {', '.join(authors)}
         self.date = min_date + (now - min_date) * random.random()
         self.authors = []
         for i in range(self.author_count):
-            self.authors.append(self.namegen.get_name())
+            new_name = self.namegen.get_name()
+            if new_name not in self.authors:
+                self.authors.append(new_name)
 
         if not "." in self.words:
             #make sure there's at least one sentance
