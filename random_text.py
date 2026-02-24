@@ -6,8 +6,9 @@ import argparse
 
 class RandomText:
 
-    def __init__(self, source_file):
+    def __init__(self, source_file, max_words=200):
         self.possibles = self.get_possibles(source_file)
+        self.max_words = 200
 
     def fix_line(self, line):
         if line.endswith("- \n"):
@@ -46,9 +47,13 @@ class RandomText:
 
 
 
-    def get_words(self, min_words=100, max_words=200):
+    def get_words(self, min_words=100, max_words=-1):
         # Generate randomized output (start with a random capitalized prefix)
         # Try and end at a full stop,
+
+        if max_words < 0:
+            max_words = self.max_words
+
         w1, w2 = random.choice([k for k in self.possibles if k[0][:1].isupper()])
         output = [w1, w2]
         # for i in range(words):
