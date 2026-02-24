@@ -154,9 +154,8 @@ by {', '.join(authors)}
         md5_hasher = hashlib.md5()
         md5_hasher.update(pdf_bytes)
         self.pdf_hash = md5_hasher.hexdigest()
-        self.pdf_size = len(pdf_bytes) + 1 # not sure where the extra byte is coming from
-
-        self.pdf_base64 = base64.b64encode(pdf_bytes)
+        self.pdf_size = len(pdf_bytes)
+        self.pdf_base64 = base64.b64encode(pdf_bytes).decode()
         self.doc_id=1
 
 
