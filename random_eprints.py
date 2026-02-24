@@ -77,7 +77,7 @@ class RandomName:
             with open(os.path.join(dirname,filename)) as namesfile:
                 names = [name.strip() for name in namesfile.readlines()]
                 self.all_names += names
-        with open((os.path.join(dirname,"surnames")) as namesfile:
+        with open(os.path.join(dirname,"surnames")) as namesfile:
             self.surnames = [name.strip() for name in namesfile.readlines()]
 
     def get_name(self):
