@@ -74,10 +74,10 @@ class RandomName:
         self.all_names = []
         firstnames = ["given_names_male", "given_names_female"]
         for filename in firstnames:
-            with open(filename) as namesfile:
+            with open(os.path.join(dirname,filename)) as namesfile:
                 names = [name.strip() for name in namesfile.readlines()]
                 self.all_names += names
-        with open("surnames") as namesfile:
+        with open((os.path.join(dirname,"surnames")) as namesfile:
             self.surnames = [name.strip() for name in namesfile.readlines()]
 
     def get_name(self):
