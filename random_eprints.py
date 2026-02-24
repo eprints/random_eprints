@@ -132,7 +132,7 @@ by {', '.join(authors)}
 
         min_date = datetime(1950, month=1, day=1)
         now = datetime.now()
-        self.nowstring = now.strftime("%d/%m/%Y, %H:%M:%S")
+        self.nowstring = now.strftime("%Y-%m-%d %H:%M:%S")
         self.date = min_date + (now - min_date) * random.random()
         self.authors = []
         for i in range(self.author_count):
@@ -154,7 +154,7 @@ by {', '.join(authors)}
         md5_hasher = hashlib.md5()
         md5_hasher.update(pdf_bytes)
         self.pdf_hash = md5_hasher.hexdigest()
-        self.pdf_size = len(pdf_bytes)
+        self.pdf_size = len(pdf_bytes) + 1 # not sure where the extra byte is coming from
 
         self.pdf_base64 = base64.b64encode(pdf_bytes)
         self.doc_id=1
