@@ -19,6 +19,8 @@ from PIL import Image
 from datetime import datetime, timedelta
 import base64
 
+dirname = os.path.dirname(__file__)
+
 from random_text import RandomText
 
 class Subjects:
@@ -277,7 +279,7 @@ def parse_args_random_eprints():
     parser.add_argument('-p', '--pdfcount', type=int, help="Max PDFS per record", default=1)
     parser.add_argument('-d', '--docs', help="Include documents", action='store_true')
     parser.add_argument('-s', '--subjects', type=str, help="subjects file path", default='/opt/eprints3/flavours/pub_lib/defaultcfg/subjects')
-    parser.add_argument('-t', '--textfile', type=str, help="path to text file for data", default='book.txt')
+    parser.add_argument('-t', '--textfile', type=str, help="path to text file for data", default=os.path.join(dirname,'book.txt'))
     parser.add_argument('-f', '--tofile', type=str, help="produce file rather than stdout",)
 
     return parser.parse_args()
@@ -291,7 +293,7 @@ if __name__ == "__main__":
     textgen = RandomText(args.textfile)
 
     namegen = RandomName()
-    imagegen = RandomImage("images")
+    imagegen = RandomImage(os.path.join(dirname,"images"))
 
     final_xml = f"""<?xml version='1.0' encoding='utf-8'?>
     <eprints xmlns='http://eprints.org/ep2/data/2.0'>"""
