@@ -27,7 +27,10 @@ class Subjects:
         self.subjects_loc = []
         self.subjects_loc_lookup = {}
         self.subjects_divisions = []
-        self.subjects = []
+        self.divisions_ids = []
+        self.divisions_lookup = {}
+        # self.subjects = []
+        self.subject_ids = []
         with open(subjects_file_path) as subjects_file:
             lines = [line for line in subjects_file.readlines()]
             for line in lines:
@@ -37,19 +40,31 @@ class Subjects:
                 if len(line) == 0:
                     continue
                 if line[0].islower():
+                    (id, text, p, d) = line.split(":")
                     self.subjects_divisions.append(line)
+                    self.divisions_ids.append(id)
+                    self.divisions_lookup[id] = text
                 if line[0].isupper():
                     self.subjects_loc.append(line)
                     (id, text, p, d) = line.split(":")
                     subject = text.replace(f"{id} ", "")
                     self.subjects_loc_lookup[id] = subject
-                    self.subjects.append(subject)
+                    # self.subjects.append(subject)
+                    self.subject_ids.append(id)
 
 
     def get_random_subject(self):
+        id = random.choice(self.subject_ids)
+        division_id = random.choice(self.divisions_ids)
+        return {
+            "id": id,
+            "subject": self.subjects_loc_lookup[id],
+            "division_id": division_id,
+            "division": self.divisions_lookup[division_id]
+        }
         return random.choice(self.subjects)
-    def get_division(self, subject):
-        return random.choice(self.subjects_divisions)
+    # def get_division(self, subject):
+    #     return random.choice(self.subjects_divisions)
 
 
 class RandomName:
@@ -124,9 +139,10 @@ by {', '.join(authors)}
 
         self.words = " ".join(self.textgenerator.get_words(self.wordcount))
 
-        self.subject = self.subjects.get_random_subject()
-        self.division = self.subjects.get_division(self.subject)
-        self.publication = f"Journal of {self.division}"
+        self.subject_info = self.subjects.get_random_subject()
+        self.subject = self.subject_info["id"]
+        self.division = self.subject_info["division_id"]
+        self.publication = f"Journal of {self.subject_info['division']}"
         self.volume = random.randint(1,10)
         self.number = random.randint(1,4)
 
@@ -235,7 +251,7 @@ by {', '.join(authors)}
       </item>"""
             xml += "    </creators>"
 
-        xml +=f"""<title>$title</title>
+        xml +=f"""<title>{self.title}</title>
     <ispublished>pub</ispublished>
     <subjects>
       <item>{self.subject}</item>
