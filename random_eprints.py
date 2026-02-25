@@ -175,9 +175,9 @@ by {', '.join(authors)}
         self.abstract = self.title
         self.image_path = self.imagegen.get_random_image_path()
 
-        pdf = self.get_pdf(self.title, self.words, self.authors, self.image_path)
+        self.pdf = self.get_pdf(self.title, self.words, self.authors, self.image_path)
 
-        pdf_bytes = pdf.output()
+        pdf_bytes = self.pdf.output()
         # hash = hashlib.md5(pdf_bytes)
         md5_hasher = hashlib.md5()
         md5_hasher.update(pdf_bytes)
@@ -289,8 +289,10 @@ def parse_args_random_eprints():
     parser.add_argument('-p', '--pdfcount', type=int, help="Max PDFS per record", default=1)
     parser.add_argument('-d', '--docs', help="Include documents", action='store_true')
     parser.add_argument('-s', '--subjects', type=str, help="subjects file path", default='/opt/eprints3/flavours/pub_lib/defaultcfg/subjects')
-    parser.add_argument('-t', '--textfile', type=str, help="path to text file for data", default=os.path.join(dirname,'book.txt'))
+    parser.add_argument('-t', '--textfiles', type=str, help="Relative path to text file folder",
+                        default=os.path.join(dirname,'texts'))
     parser.add_argument('-f', '--tofile', type=str, help="produce file rather than stdout",)
+    parser.add_argument('--debug', action='store_true')
 
     return parser.parse_args()
 
@@ -300,7 +302,11 @@ if __name__ == "__main__":
 
     subjects = Subjects(args.subjects)
 
-    textgen = RandomText(args.textfile)
+    #a few different text generators, from different source material.
+    text_file_folder = os.path.join(dirname, args.textfiles)
+
+    textfiles = [os.path.join(text_file_folder, textfile) for textfile in os.listdir(text_file_folder) if os.path.isfile(os.path.join(text_file_folder, textfile))]
+    textgens = [RandomText(textfile) for textfile in textfiles]
 
     namegen = RandomName()
     imagegen = RandomImage(os.path.join(dirname,"images"))
@@ -310,10 +316,12 @@ if __name__ == "__main__":
 
     eprints = []
     for i in range(args.records):
-        eprint = RandomEPrint(textgen, subjects, namegen, imagegen)
+        eprint = RandomEPrint(random.choice(textgens), subjects, namegen, imagegen)
 
         eprints.append(eprint)
         final_xml += eprint.get_xml()
+        if args.debug:
+            eprint.pdf.output(f"eprint_{i}.pdf")
 
 
 

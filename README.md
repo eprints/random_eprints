@@ -25,3 +25,10 @@ By default it assumes it's running on the same box as an EPrints install. If it 
 ## TODOs
 
 Internally it can support creators or contributors (EPrints 3.4 or 3.5), but there's no command line flag to choose between them.
+
+
+## Source Material
+
+ - themodernclock.txt - The Modern Clock by Ward L. Goodrich: https://www.gutenberg.org/ebooks/61494
+ - 20thousandleagues.txt - Twenty Thousand Leagues under the Sea by Jules Verne: https://www.gutenberg.org/ebooks/164
+ - howitworks.txt - How it Works by Archibald Williams https://www.gutenberg.org/ebooks/28553
