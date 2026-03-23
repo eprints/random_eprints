@@ -21,7 +21,12 @@ import base64
 
 dirname = os.path.dirname(__file__)
 
-from random_text import RandomText
+try:
+    #when imported as a python package
+    from .random_text import RandomText
+except:
+    #when run locally
+    from random_text import RandomText
 
 class Subjects:
 
@@ -288,7 +293,7 @@ def parse_args_random_eprints():
     parser.add_argument('-i', '--imagecount', type=int, help="Max images per record", default=1)
     parser.add_argument('-p', '--pdfcount', type=int, help="Max PDFS per record", default=1)
     parser.add_argument('-d', '--docs', help="Include documents", action='store_true')
-    parser.add_argument('-s', '--subjects', type=str, help="subjects file path", default='/opt/eprints3/flavours/pub_lib/defaultcfg/subjects')
+    parser.add_argument('-s', '--subjects', type=str, help="subjects file path", default='subjects')#/opt/eprints3/flavours/pub_lib/defaultcfg/subjects
     parser.add_argument('-t', '--textfiles', type=str, help="Relative path to text file folder",
                         default=os.path.join(dirname,'texts'))
     parser.add_argument('-f', '--tofile', type=str, help="produce file rather than stdout",)
@@ -296,7 +301,48 @@ def parse_args_random_eprints():
 
     return parser.parse_args()
 
+
+def get_random_eprint(text_file_folder=None, subjects_file_path=None):
+    '''
+    TODO consider adding more arguments. for now, use default settings to generate a random eprint
+    :return:
+    '''
+    # path relative to this file
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    if text_file_folder is None:
+        text_file_folder = os.path.join(dir_path, "texts")
+
+    if subjects_file_path is None:
+        subjects_file_path = os.path.join(dir_path, "subjects")
+
+    textfiles = [os.path.join(text_file_folder, textfile) for textfile in os.listdir(text_file_folder) if
+                 os.path.isfile(os.path.join(text_file_folder, textfile))]
+    textgens = [RandomText(textfile) for textfile in textfiles]
+
+    namegen = RandomName()
+    imagegen = RandomImage(os.path.join(dirname, "images"))
+
+    subjects = Subjects(subjects_file_path)
+
+    eprint = RandomEPrint(random.choice(textgens), subjects, namegen, imagegen)
+
+    return eprint
+
+def get_xml(eprints):
+    final_xml = f"""<?xml version='1.0' encoding='utf-8'?>
+        <eprints xmlns='http://eprints.org/ep2/data/2.0'>"""
+
+    for eprint in eprints:
+        final_xml += eprint.get_xml()
+    final_xml += "</eprints>"
+
+    return final_xml
+
 if __name__ == "__main__":
+    '''
+    TODO unify a bit with get_random_eprint.
+    This was originally written to be called from the command line, but can now be used as a python package as well
+    '''
     #random.seed(1)
     args = parse_args_random_eprints()
 
@@ -311,21 +357,21 @@ if __name__ == "__main__":
     namegen = RandomName()
     imagegen = RandomImage(os.path.join(dirname,"images"))
 
-    final_xml = f"""<?xml version='1.0' encoding='utf-8'?>
-    <eprints xmlns='http://eprints.org/ep2/data/2.0'>"""
+    # final_xml = f"""<?xml version='1.0' encoding='utf-8'?>
+    # <eprints xmlns='http://eprints.org/ep2/data/2.0'>"""
 
     eprints = []
     for i in range(args.records):
         eprint = RandomEPrint(random.choice(textgens), subjects, namegen, imagegen)
 
         eprints.append(eprint)
-        final_xml += eprint.get_xml()
+        # final_xml += eprint.get_xml()
         if args.debug:
             eprint.pdf.output(f"eprint_{i}.pdf")
 
 
-
-    final_xml += "</eprints>"
+    final_xml = get_xml(eprints)
+    # final_xml += "</eprints>"
     if args.tofile:
         with open(args.tofile, "w") as file:
             file.write(final_xml)
