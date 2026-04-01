@@ -166,7 +166,8 @@ by {', '.join(authors)}
         self.nowstring = now.strftime("%Y-%m-%d %H:%M:%S")
         self.date = min_date + (now - min_date) * random.random()
         self.authors = []
-        for i in range(self.author_count):
+        while len(self.authors) < self.author_count and len(self.authors) < len(self.namegen.preallocated_names):
+        # for i in range(self.author_count):
             new_name = self.namegen.get_name()
             if new_name not in self.authors:
                 self.authors.append(new_name)
@@ -302,11 +303,12 @@ def parse_args_random_eprints():
     return parser.parse_args()
 
 
-def get_random_eprint(text_file_folder=None, subjects_file_path=None):
+def get_random_eprint(seed, text_file_folder=None, subjects_file_path=None,author_count=3, **kwargs):
     '''
     TODO consider adding more arguments. for now, use default settings to generate a random eprint
     :return:
     '''
+    random.seed(seed)
     # path relative to this file
     dir_path = os.path.dirname(os.path.realpath(__file__))
     if text_file_folder is None:
@@ -319,12 +321,12 @@ def get_random_eprint(text_file_folder=None, subjects_file_path=None):
                  os.path.isfile(os.path.join(text_file_folder, textfile))]
     textgens = [RandomText(textfile) for textfile in textfiles]
 
-    namegen = RandomName()
+    namegen = RandomName(preallocate=author_count*2)
     imagegen = RandomImage(os.path.join(dirname, "images"))
 
     subjects = Subjects(subjects_file_path)
 
-    eprint = RandomEPrint(random.choice(textgens), subjects, namegen, imagegen)
+    eprint = RandomEPrint(random.choice(textgens), subjects, namegen, imagegen,author_count=author_count, **kwargs)
 
     return eprint
 
