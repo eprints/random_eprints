@@ -173,7 +173,7 @@ by {', '.join(authors)}
                 self.authors.append(new_name)
 
         if not "." in self.words:
-            #make sure there's at least one sentance
+            #make sure there's at least one sentence
             self.words += "."
 
         # up to the first full stop
